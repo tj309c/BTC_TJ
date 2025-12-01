@@ -191,7 +191,7 @@ function RealtimeSignalsPanel({ signals, onNotificationToggle, notificationsEnab
         </button>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
         {/* Volume Velocity */}
         <div className={`rounded-lg border p-2.5 ${getVelocityColor()}`}>
           <div className="flex items-center gap-1 mb-1">
@@ -252,8 +252,8 @@ function RealtimeSignalsPanel({ signals, onNotificationToggle, notificationsEnab
           </p>
         </div>
 
-        {/* Volume Trend */}
-        <div className={`rounded-lg border p-2.5 ${getTrendColor()}`}>
+        {/* Volume Trend - spans full width on mobile to avoid orphan */}
+        <div className={`rounded-lg border p-2.5 col-span-2 lg:col-span-1 ${getTrendColor()}`}>
           <div className="flex items-center gap-1 mb-1">
             {signals.volume_trend.direction === 'increasing' ? (
               <TrendingUp className="w-3.5 h-3.5" />
