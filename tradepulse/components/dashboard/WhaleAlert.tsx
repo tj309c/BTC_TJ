@@ -61,10 +61,8 @@ interface VolumeAnalysisData {
   error?: string;
 }
 
-// Time window presets
+// Time window presets (minimum 7 days for statistically meaningful results)
 const TIME_PRESETS = [
-  { value: 1, label: '1D' },
-  { value: 3, label: '3D' },
   { value: 7, label: '7D' },
   { value: 14, label: '14D' },
   { value: 30, label: '30D' },
@@ -193,7 +191,7 @@ function RealtimeSignalsPanel({ signals, onNotificationToggle, notificationsEnab
         </button>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
         {/* Volume Velocity */}
         <div className={`rounded-lg border p-2.5 ${getVelocityColor()}`}>
           <div className="flex items-center gap-1 mb-1">

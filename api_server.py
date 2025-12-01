@@ -2302,12 +2302,14 @@ def get_bitcoin_volume_analysis():
     compared to historical averages. Detects volume spikes.
 
     Query Parameters:
-        lookback: int - Number of days for analysis window (1-30, default 14)
+        lookback: int - Number of days for analysis window (7-30, default 14)
+                       Minimum 7 days required for statistically meaningful results
     """
     try:
-        # Get lookback period from query params (default 14, min 1, max 30)
+        # Get lookback period from query params (default 14, min 7, max 30)
+        # Minimum 7 days required for meaningful z-score/percentile calculations
         lookback_days = request.args.get('lookback', 14, type=int)
-        lookback_days = max(1, min(30, lookback_days))
+        lookback_days = max(7, min(30, lookback_days))
 
         # Fetch historical OHLCV data from Kraken
         # Get 60 days of daily data for statistical analysis
