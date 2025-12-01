@@ -13,7 +13,7 @@ services:
       - key: SERVERLESS
         value: "true"
       - key: PYTHON_VERSION
-        value: "3.11"
+        value: "3.11.0"
       # Add your API keys as secrets in Render dashboard:
       # - POLYGON_API_KEY
       # - FMP_API_KEY
