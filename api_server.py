@@ -1984,6 +1984,7 @@ def bitcoin_social_sentiment():
     try:
         # Get current Bitcoin price for context
         btc_price = None
+        btc_change = 0
         try:
             price_resp = requests.get(
                 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true',
@@ -1992,7 +1993,7 @@ def bitcoin_social_sentiment():
             if price_resp.ok:
                 data = price_resp.json()
                 btc_price = data.get('bitcoin', {}).get('usd')
-                btc_change = data.get('bitcoin', {}).get('usd_24h_change', 0)
+                btc_change = data.get('bitcoin', {}).get('usd_24h_change', 0) or 0
         except:
             pass
 
@@ -2004,10 +2005,14 @@ def bitcoin_social_sentiment():
             'Content-Type': 'application/json'
         }
 
+        # Format price string safely
+        price_str = f"${btc_price:,.0f}" if btc_price else "Unknown"
+        change_str = f"{btc_change:+.1f}%" if btc_change else "N/A"
+
         # Ask Grok for structured sentiment analysis
         prompt = f"""Analyze current Bitcoin/crypto sentiment on X (Twitter) right now.
 
-Current BTC Price: ${btc_price:,.0f} (24h change: {btc_change:+.1f}%)
+Current BTC Price: {price_str} (24h change: {change_str})
 
 Return your analysis as a JSON object with this EXACT structure:
 {{
@@ -2172,18 +2177,30 @@ def bitcoin_claude_analysis():
             'Content-Type': 'application/json'
         }
 
+        # Safely format market data values
+        price = btc_data.get('price') or 0
+        market_cap = btc_data.get('market_cap') or 0
+        volume_24h = btc_data.get('volume_24h') or 0
+        change_24h = btc_data.get('change_24h') or 0
+        change_7d = btc_data.get('change_7d') or 0
+        change_30d = btc_data.get('change_30d') or 0
+        ath = btc_data.get('ath') or 0
+        ath_change = btc_data.get('ath_change') or 0
+        fg_value = fear_greed.get('value') if fear_greed else 'N/A'
+        fg_class = fear_greed.get('classification') if fear_greed else 'N/A'
+
         # Build comprehensive analysis prompt
         prompt = f"""Provide a comprehensive Bitcoin market analysis based on this data:
 
 MARKET DATA:
-- Current Price: ${btc_data.get('price', 'N/A'):,.0f}
-- Market Cap: ${btc_data.get('market_cap', 0)/1e9:.1f}B
-- 24h Volume: ${btc_data.get('volume_24h', 0)/1e9:.1f}B
-- 24h Change: {btc_data.get('change_24h', 0):+.2f}%
-- 7d Change: {btc_data.get('change_7d', 0):+.2f}%
-- 30d Change: {btc_data.get('change_30d', 0):+.2f}%
-- ATH: ${btc_data.get('ath', 0):,.0f} ({btc_data.get('ath_change', 0):+.1f}% from ATH)
-- Fear & Greed Index: {fear_greed.get('value') if fear_greed else 'N/A'} ({fear_greed.get('classification') if fear_greed else 'N/A'})
+- Current Price: ${price:,.0f}
+- Market Cap: ${market_cap/1e9:.1f}B
+- 24h Volume: ${volume_24h/1e9:.1f}B
+- 24h Change: {change_24h:+.2f}%
+- 7d Change: {change_7d:+.2f}%
+- 30d Change: {change_30d:+.2f}%
+- ATH: ${ath:,.0f} ({ath_change:+.1f}% from ATH)
+- Fear & Greed Index: {fg_value} ({fg_class})
 
 Provide analysis in this JSON format:
 {{
