@@ -1,0 +1,16 @@
+# Ignore secret and environment files
+.env
+secrets.toml
+secrets.toml.toml
+
+# Python artifacts
+__pycache__/
+*.pyc
+
+# Data artifacts - avoid committing large datasets
+*.parquet
+*.csv
+
+# Node / Next.js artifacts
+tradepulse/.next
+tradepulse/node_modules

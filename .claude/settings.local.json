@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(move secrets.toml.toml secrets.toml)",
+      "Bash(python:*)",
+      "Bash(cat:*)",
+      "Bash(curl:*)",
+      "Bash(npm install:*)",
+      "Bash(npm info:*)",
+      "Bash(pip install:*)",
+      "Bash(for i in 1 2 3 4 5)",
+      "Bash(do curl -s -w \"Request $i: %{time_total}s\\n\" -o /dev/null \"http://localhost:5000/api/bitcoin-chart-data\")",
+      "Bash(done)",
+      "Bash(ls:*)",
+      "Bash(del \"c:\\Users\\603506\\Desktop\\Trevor_Python\\BTC\\btc_full_data_cache.parquet\")",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(taskkill:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
