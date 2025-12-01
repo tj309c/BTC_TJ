@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, ReferenceLine, Tooltip } from 'recharts';
+import { API_BASE_URL } from '@/lib/api';
 
 interface DepthLevel {
   price: number;
@@ -34,7 +35,7 @@ export function OrderBookDepth() {
   useEffect(() => {
     const fetchOrderBook = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/bitcoin-orderbook');
+        const res = await fetch(`${API_BASE_URL}/api/bitcoin-orderbook`);
         if (res.ok) {
           const result = await res.json();
           if (!result.error) {

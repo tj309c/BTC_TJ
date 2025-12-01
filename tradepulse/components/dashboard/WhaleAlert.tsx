@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Activity, TrendingUp, TrendingDown, Zap, AlertTriangle, ChevronDown, ChevronUp, Bell, BellOff, Clock, ArrowUpRight, ArrowDownRight, Minus, BarChart2, Target } from 'lucide-react';
+import { API_BASE_URL } from '@/lib/api';
 
 interface VolumeSpike {
   current_volume: number;
@@ -778,7 +779,7 @@ export function WhaleAlert() {
 
   const fetchVolumeAnalysis = useCallback(async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/bitcoin-volume-analysis?lookback=${lookbackDays}`);
+      const res = await fetch(`${API_BASE_URL}/api/bitcoin-volume-analysis?lookback=${lookbackDays}`);
       if (res.ok) {
         const result = await res.json();
         if (result.spike) {

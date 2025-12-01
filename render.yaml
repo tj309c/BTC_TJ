@@ -1,0 +1,25 @@
+# Render Blueprint for TradePulse API
+# Deploy: Connect GitHub repo to Render, it auto-detects this file
+
+services:
+  - type: web
+    name: tradepulse-api
+    env: python
+    region: oregon  # or nearest to your users
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn api_server:app --bind 0.0.0.0:$PORT
+    envVars:
+      - key: SERVERLESS
+        value: "true"
+      - key: PYTHON_VERSION
+        value: "3.11"
+      # Add your API keys as secrets in Render dashboard:
+      # - POLYGON_API_KEY
+      # - FMP_API_KEY
+      # - FINNHUB_API_KEY
+      # - NEWS_API_KEY
+      # - XAI_API_KEY
+      # - ANTHROPIC_API_KEY
+      # - GOOGLE_API_KEY (for Gemini)
+    healthCheckPath: /api/health

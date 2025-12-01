@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import Highcharts from 'highcharts/highstock';
 import HighchartsReact from 'highcharts-react-official';
 import { Settings2, X, ChevronDown, TrendingUp, Activity, BarChart3, Target, Layers } from 'lucide-react';
+import { API_BASE_URL } from '@/lib/api';
 
 interface OHLCData {
   time: number;
@@ -313,7 +314,7 @@ export function BitcoinHighchart() {
   useEffect(() => {
     const fetchPrice = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/bitcoin-price');
+        const res = await fetch(`${API_BASE_URL}/api/bitcoin-price`);
         if (res.ok) {
           const data = await res.json();
           setPriceData(data);
@@ -333,7 +334,7 @@ export function BitcoinHighchart() {
     const fetchChartData = async () => {
       try {
         setLoading(true);
-        const res = await fetch('http://localhost:5000/api/bitcoin-chart-data');
+        const res = await fetch(`${API_BASE_URL}/api/bitcoin-chart-data`);
         if (res.ok) {
           const data: ChartDataResponse = await res.json();
           if (data.ohlc && data.ohlc.length > 0) {

@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { Sparkles, TrendingUp, TrendingDown, Minus, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react';
+import { API_BASE_URL } from '@/lib/api';
 
 interface AIAnalysisData {
   analysis: string;
@@ -70,7 +71,7 @@ export function AIAnalysis({ onLevelsExtracted }: AIAnalysisProps) {
     setError(null);
 
     try {
-      const res = await fetch('http://localhost:5000/api/bitcoin-ai-analysis');
+      const res = await fetch(`${API_BASE_URL}/api/bitcoin-ai-analysis`);
       if (res.ok) {
         const result = await res.json();
         if (result.analysis) {

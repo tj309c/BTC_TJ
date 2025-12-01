@@ -787,10 +787,18 @@ import time as time_module
 # 3. Pre-computed indicators stored alongside OHLC
 # 4. Incremental updates (only fetch new data)
 # 5. Multiple cache tiers: Memory -> Parquet -> API
+#
+# SERVERLESS MODE: Set SERVERLESS=true to disable parquet files
+# (for deployment on Render, Railway, Vercel, etc.)
 
 import threading
 
-# Cache file paths
+# Serverless mode detection - disables file-based caching
+SERVERLESS_MODE = os.environ.get('SERVERLESS', 'false').lower() == 'true'
+if SERVERLESS_MODE:
+    print("Running in SERVERLESS mode - parquet file caching disabled")
+
+# Cache file paths (only used when not in serverless mode)
 CACHE_DIR = os.path.dirname(__file__)
 BTC_CACHE_FILE = os.path.join(CACHE_DIR, 'btc_ohlc_cache.parquet')
 BTC_FULL_CACHE_FILE = os.path.join(CACHE_DIR, 'btc_full_data_cache.parquet')
@@ -871,6 +879,8 @@ def fetch_kraken_btc_ohlc():
 
 def load_btc_cache():
     """Load BTC data from parquet cache."""
+    if SERVERLESS_MODE:
+        return None  # Skip file-based cache in serverless
     try:
         import pandas as pd
         if os.path.exists(BTC_CACHE_FILE):
@@ -883,6 +893,8 @@ def load_btc_cache():
 
 def save_btc_cache(ohlc_data):
     """Save BTC data to parquet cache."""
+    if SERVERLESS_MODE:
+        return  # Skip file-based cache in serverless
     try:
         import pandas as pd
         df = pd.DataFrame(ohlc_data)
@@ -1024,6 +1036,8 @@ def get_bitcoin_ohlc():
 
 def load_indicators_cache():
     """Load pre-computed indicators from parquet cache."""
+    if SERVERLESS_MODE:
+        return None  # Skip file-based cache in serverless
     try:
         import pandas as pd
         if os.path.exists(BTC_INDICATORS_CACHE_FILE):
@@ -1036,6 +1050,8 @@ def load_indicators_cache():
 
 def save_indicators_cache(indicators_dict):
     """Save computed indicators to parquet cache."""
+    if SERVERLESS_MODE:
+        return  # Skip file-based cache in serverless
     try:
         import pandas as pd
         df = pd.DataFrame(indicators_dict)
@@ -1067,7 +1083,7 @@ def load_full_data_cache():
     """Load pre-computed full data (OHLC + all indicators) from parquet.
 
     TIER 1: Check memory cache first (instant, ~0ms)
-    TIER 2: Load from parquet file (~10-50ms)
+    TIER 2: Load from parquet file (~10-50ms) - skipped in serverless mode
     """
     global MEMORY_CACHE
 
@@ -1076,7 +1092,9 @@ def load_full_data_cache():
         if MEMORY_CACHE['full_data'] is not None:
             return MEMORY_CACHE['full_data']
 
-    # Tier 2: Parquet file
+    # Tier 2: Parquet file (skip in serverless mode)
+    if SERVERLESS_MODE:
+        return None
     try:
         import pandas as pd
         if os.path.exists(BTC_FULL_CACHE_FILE):
@@ -1099,22 +1117,25 @@ def save_full_data_cache(data_dict):
     """Save pre-computed full data to parquet AND memory cache."""
     global MEMORY_CACHE
 
-    try:
-        import pandas as pd
-        df = pd.DataFrame(data_dict)
-        df.to_parquet(BTC_FULL_CACHE_FILE, index=False)
+    # Sanitize for memory cache (parquet handles NaN fine, but JSON doesn't)
+    sanitized = sanitize_for_json(data_dict)
 
-        # Sanitize for memory cache (parquet handles NaN fine, but JSON doesn't)
-        sanitized = sanitize_for_json(data_dict)
+    # Always update memory cache
+    with CACHE_LOCK:
+        MEMORY_CACHE['full_data'] = sanitized
+        MEMORY_CACHE['last_update'] = time_module.time()
 
-        # Also update memory cache
-        with CACHE_LOCK:
-            MEMORY_CACHE['full_data'] = sanitized
-            MEMORY_CACHE['last_update'] = time_module.time()
-
-        print(f"Saved full data cache ({len(df)} rows) to {BTC_FULL_CACHE_FILE}")
-    except Exception as e:
-        print(f"Full data cache save error: {e}")
+    # Save to parquet file only if not in serverless mode
+    if not SERVERLESS_MODE:
+        try:
+            import pandas as pd
+            df = pd.DataFrame(data_dict)
+            df.to_parquet(BTC_FULL_CACHE_FILE, index=False)
+            print(f"Saved full data cache ({len(df)} rows) to {BTC_FULL_CACHE_FILE}")
+        except Exception as e:
+            print(f"Full data cache save error: {e}")
+    else:
+        print(f"Memory cache updated ({len(data_dict.get('time', []))} rows) - serverless mode")
 
 
 def build_full_data_cache(ohlc):

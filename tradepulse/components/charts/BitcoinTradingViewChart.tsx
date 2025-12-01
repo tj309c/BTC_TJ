@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { createChart, ColorType, CrosshairMode } from 'lightweight-charts';
 import type { IChartApi, ISeriesApi, CandlestickData, Time, LineData } from 'lightweight-charts';
 import { Settings2, X, ChevronDown, TrendingUp, Activity, BarChart3 } from 'lucide-react';
+import { API_BASE_URL } from '@/lib/api';
 
 interface OHLCData {
   time: number;
@@ -155,7 +156,7 @@ export function BitcoinTradingViewChart() {
   useEffect(() => {
     const fetchPrice = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/bitcoin-price');
+        const res = await fetch(`${API_BASE_URL}/api/bitcoin-price`);
         if (res.ok) {
           const data = await res.json();
           setPriceData(data);
@@ -206,7 +207,7 @@ export function BitcoinTradingViewChart() {
       if (!chartRef.current || !seriesRef.current || !volumeSeriesRef.current) return;
 
       try {
-        const res = await fetch('http://localhost:5000/api/bitcoin-chart-data');
+        const res = await fetch(`${API_BASE_URL}/api/bitcoin-chart-data`);
         if (!res.ok) return;
 
         const newData: ChartDataResponse = await res.json();
@@ -323,7 +324,7 @@ export function BitcoinTradingViewChart() {
       const fetchChartData = async () => {
         try {
           setLoading(true);
-          const res = await fetch('http://localhost:5000/api/bitcoin-chart-data');
+          const res = await fetch(`${API_BASE_URL}/api/bitcoin-chart-data`);
           if (res.ok) {
             const data: ChartDataResponse = await res.json();
             // Cache data for indicator toggles

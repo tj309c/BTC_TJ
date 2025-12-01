@@ -4,7 +4,7 @@
 import { CryptoData, SecFiling, MarketEvent, NewsItem } from './types';
 
 // Backend API base URL - the Python server that has access to API keys
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 export async function fetchCryptoData(): Promise<CryptoData[]> {
   try {

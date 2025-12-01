@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { MessageCircle, TrendingUp, TrendingDown, Hash, Users, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react';
+import { API_BASE_URL } from '@/lib/api';
 
 interface SentimentData {
   sentiment: {
@@ -50,7 +51,7 @@ export function SocialSentiment() {
     setError(null);
 
     try {
-      const res = await fetch('http://localhost:5000/api/bitcoin-social-sentiment');
+      const res = await fetch(`${API_BASE_URL}/api/bitcoin-social-sentiment`);
       if (res.ok) {
         const result = await res.json();
         if (result.sentiment) {

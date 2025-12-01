@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { History, TrendingUp, TrendingDown, Clock, Target, AlertTriangle, Lightbulb, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react';
+import { API_BASE_URL } from '@/lib/api';
 
 interface TrajectoryPoint {
   day: number;
@@ -69,7 +70,7 @@ export function HistoricalPatterns() {
     setError(null);
 
     try {
-      const res = await fetch('http://localhost:5000/api/bitcoin-historical-patterns');
+      const res = await fetch(`${API_BASE_URL}/api/bitcoin-historical-patterns`);
       if (res.ok) {
         const result = await res.json();
         if (result.patterns) {

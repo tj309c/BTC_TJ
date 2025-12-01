@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { Brain, Target, AlertTriangle, TrendingUp, TrendingDown, Minus, RefreshCw, ChevronDown, ChevronUp, Shield, Zap } from 'lucide-react';
+import { API_BASE_URL } from '@/lib/api';
 
 interface ClaudeAnalysisData {
   analysis: {
@@ -74,7 +75,7 @@ export function ClaudeAnalysis() {
     setError(null);
 
     try {
-      const res = await fetch('http://localhost:5000/api/bitcoin-claude-analysis');
+      const res = await fetch(`${API_BASE_URL}/api/bitcoin-claude-analysis`);
       if (res.ok) {
         const result = await res.json();
         if (result.analysis) {
