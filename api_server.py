@@ -2177,15 +2177,21 @@ def bitcoin_claude_analysis():
             'Content-Type': 'application/json'
         }
 
-        # Safely format market data values
-        price = btc_data.get('price') or 0
-        market_cap = btc_data.get('market_cap') or 0
-        volume_24h = btc_data.get('volume_24h') or 0
-        change_24h = btc_data.get('change_24h') or 0
-        change_7d = btc_data.get('change_7d') or 0
-        change_30d = btc_data.get('change_30d') or 0
-        ath = btc_data.get('ath') or 0
-        ath_change = btc_data.get('ath_change') or 0
+        # Safely format market data values - convert to float to handle string responses
+        def safe_float(val, default=0):
+            try:
+                return float(val) if val is not None else default
+            except (ValueError, TypeError):
+                return default
+
+        price = safe_float(btc_data.get('price'))
+        market_cap = safe_float(btc_data.get('market_cap'))
+        volume_24h = safe_float(btc_data.get('volume_24h'))
+        change_24h = safe_float(btc_data.get('change_24h'))
+        change_7d = safe_float(btc_data.get('change_7d'))
+        change_30d = safe_float(btc_data.get('change_30d'))
+        ath = safe_float(btc_data.get('ath'))
+        ath_change = safe_float(btc_data.get('ath_change'))
         fg_value = fear_greed.get('value') if fear_greed else 'N/A'
         fg_class = fear_greed.get('classification') if fear_greed else 'N/A'
 
